@@ -1,0 +1,7 @@
+data
+.ipynb_checkpoints
+*.zip
+*.pyc
+*.pt
+*.pkl
+__pycache__
