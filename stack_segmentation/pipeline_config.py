@@ -17,7 +17,7 @@ dataloaders_conf = {
     'test': {
         'batch_size': 32,
         'num_workers': 8,
-        'shuffle': False,
+        'shuffle': True,
         'augmentation_pipeline': None,
     },
 }
@@ -30,6 +30,6 @@ model_conf = {
 }
 
 train_conf = {
-    'num_epochs': 50,
+    'num_epochs': 100,
     'device': 'cuda:0',
 }

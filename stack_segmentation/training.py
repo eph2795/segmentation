@@ -105,8 +105,8 @@ def train_loop(
             for metric_name, fn in metrics.items():
                 stack_dict[metric_name].append(fn(y, out))
         
-        for metric_name in metrics:
-            metrics_dict[metric_name] = np.array(stack_dict[metric_name])
+#         for metric_name in metrics:
+#             metrics_dict[metric_name] = np.array(stack_dict[metric_name])
         metrics_dict[stack_name] = stack_dict
     
     results = {
