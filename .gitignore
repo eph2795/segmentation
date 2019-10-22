@@ -4,4 +4,5 @@ data
 *.pyc
 *.pt
 *.pkl
+*.torch
 __pycache__

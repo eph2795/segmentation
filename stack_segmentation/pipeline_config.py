@@ -24,6 +24,7 @@ dataloaders_conf = {
 
 model_conf = {
     'device': 'cuda:0',
+#     'device': 'cpu',
     'lr': 1e-4,
     'factor': 0.75,
     'patience': 2,
@@ -32,4 +33,5 @@ model_conf = {
 train_conf = {
     'num_epochs': 100,
     'device': 'cuda:0',
+#     'device': 'cpu',
 }
