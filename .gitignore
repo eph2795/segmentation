@@ -5,4 +5,5 @@ data
 *.pt
 *.pkl
 *.torch
+*.pt
 __pycache__
