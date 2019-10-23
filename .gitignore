@@ -2,8 +2,6 @@ data
 .ipynb_checkpoints
 *.zip
 *.pyc
-*.pt
-*.pkl
 *.torch
 *.pt
 __pycache__
