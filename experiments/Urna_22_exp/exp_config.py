@@ -1,10 +1,10 @@
 data_conf = {
-    'conf_name': 'carb96558',
+    'conf_name': 'Urna_22',
     'stacks': [
         {
-            'path': '../../data/carb96558',
-            'slice_train': (slice(None), slice(None), slice(230)),
-            'slice_val': (slice(None), slice(None), slice(250, 470)),
+            'path': '../../data/Urna_22',
+            'slice_train': (slice(None), slice(None), slice(220)),
+            'slice_val': (slice(None), slice(None), slice(245, 455)),
         },
         {
             'path': '../../data/carb96558',

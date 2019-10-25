@@ -1,10 +1,10 @@
 data_conf = {
-    'conf_name': 'carb96558',
+    'conf_name': 'SoilB-2',
     'stacks': [
         {
-            'path': '../../data/carb96558',
+            'path': '../../data/SoilB-2',
             'slice_train': (slice(None), slice(None), slice(230)),
-            'slice_val': (slice(None), slice(None), slice(250, 470)),
+            'slice_val': (slice(None), slice(None), slice(240, 460)),
         },
         {
             'path': '../../data/carb96558',
