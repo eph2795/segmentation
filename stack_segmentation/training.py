@@ -5,12 +5,13 @@ import numpy as np
 
 import torch
 from torch import nn
-from torch.optim import Adam
+from torch.optim import AdamW
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from .stack import Stack
 from .unet import UNet
 from .early_stopping import EarlyStopping
+from .loss import make_loss
 
 
 def handle_stacks_data(stacks, patches, **kwargs):
@@ -31,11 +32,11 @@ def handle_stacks_data(stacks, patches, **kwargs):
     return data_train, data_val, data_test
 
 
-def make_model(device, lr, factor, patience):
+def make_model(device, loss, lr, min_lr, weight_decay, factor, patience, weight=None):
     model = UNet(in_channels=1, n_classes=2, padding=True).to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = Adam(model.parameters(), lr=lr)
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=factor, patience=patience, verbose=True)
+    criterion = make_loss(loss_list=loss, weight=weight, device=device)
+    optimizer = AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=factor, patience=patience, verbose=True, min_lr=min_lr)
     return model, criterion, optimizer, scheduler
 
 
@@ -54,7 +55,7 @@ def train_loop(
     
     train_losses = []
     val_losses = []
-    es = EarlyStopping(patience=5, verbose=False, delta=2.5e-5, checkpoint_path='{}.pt'.format(exp_name))
+    es = EarlyStopping(patience=10, verbose=False, delta=1e-4, checkpoint_path='{}.pt'.format(exp_name))
         
     for i in range(num_epochs):
         print('Epoch {}...'.format(i))

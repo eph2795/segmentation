@@ -162,10 +162,10 @@ class Stack:
         for i in tqdm(range(self.features.shape[2])):
             if features:
                 imageio.imwrite(os.path.join(features_path, 'feats{:04}.bmp'.format(i)), 
-                                self.features[:, :, i].cast(np.uint8))
+                                self.features[:, :, i].astype(np.uint8))
             if targets:
                 imageio.imwrite(os.path.join(targets_path, 'targets{:04}.bmp'.format(i)), 
-                                self.preds[:, :, i].cast(np.uint8))
+                                self.preds[:, :, i].astype(np.uint8))
             if preds:
                 pred =  self.preds[:, :, i]
                 if np.issubdtype(pred.dtype, np.floating):

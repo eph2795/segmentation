@@ -24,7 +24,7 @@ def image_process_basic(image, mean=0.3057127, std=0.13275838):
 
 
 def mask_process_basic(mask):
-    binary = np.where(mask == 255, 1, 0)
+    binary = np.where(mask == 255, 0, 1)
     return binary
     
 
