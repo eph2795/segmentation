@@ -167,7 +167,7 @@ class Stack:
                 imageio.imwrite(os.path.join(targets_path, 'targets{:04}.bmp'.format(i)), 
                                 self.preds[:, :, i].astype(np.uint8))
             if preds:
-                pred =  self.preds[:, :, i]
+                pred = self.preds[:, :, i]
                 if np.issubdtype(pred.dtype, np.floating):
                     pred = (pred > threshold)
                 pred = np.where(pred, 255, 0).astype(np.uint8)

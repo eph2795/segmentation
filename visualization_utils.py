@@ -10,7 +10,28 @@ def output_to_binary(prediction, threshold):
     e = e - e.max(axis=0, keepdims=True)
     e = np.exp(e)
     e = e / np.sum(e, axis=0, keepdims=True)
-    return np.where(e[1] > threshold, 255, 0).astype(np.uint8)
+    return np.where(e[1] > threshold, 1, 0).astype(np.uint8)
+
+
+def make_colored_diff(gt, pred, threshold=None, path=None):
+    if np.issubdtype(pred.dtype, np.floating):
+        pred = output_to_binary(pred, threshold)
+         
+    red_mask = np.where((gt == 1) & (pred == 0), 255, 0)
+    blue_mask = np.where((gt == 0) & (pred == 1), 255, 0)
+    valid_mask = np.where((gt == 1) & (pred == 1), 255, 0)[:, :, np.newaxis]
+
+    colored_image = np.concatenate([valid_mask, valid_mask, valid_mask], axis=2)
+    colored_image[:, :, 0] += red_mask
+    colored_image[:, :, 2] += blue_mask
+
+    plt.figure(figsize=(10, 10))
+    plt.axis('off')
+    plt.imshow(colored_image)
+
+    if path is not None:
+        plt.savefig(path)
+    
 
 
 def plot_sample(sample, mask, predicted, threshold, metrics, fig_path=None):
