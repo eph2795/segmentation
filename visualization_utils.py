@@ -108,7 +108,7 @@ def plot_polar(
 #             axis.tick_params(labelsize=18)
 #             axis.set_xlabel('Threshold', fontsize=22)
 #             axis.set_ylabel(metric_name[0].upper() + metric_name[1:], fontsize=22)
-        axis.set_rmin(0.8)
+        axis.set_rmin(0.7)
         axis.set_rmax(1)
         axis.set_rticks(np.linspace(0.8, 1, 9))
         axis.set_yticklabels([round(x, 3) for x in np.linspace(0.8, 1, 9)], 
@@ -131,7 +131,7 @@ def plot_polar(
 #     fig.text(0.05, 0.5, metric_name.upper(), 
 #              ha='center', va='center', rotation=90, fontsize=40)
 
-    plt.savefig('./results/polar_plot_{}_{}_{}.jpg'
+    plt.savefig('./article_results/polar_plot_{}_{}_{}.jpg'
                 .format(title, '_'.join(models), '_'.join(metrics_th)))
     plt.show()
     

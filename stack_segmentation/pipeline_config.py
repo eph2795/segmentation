@@ -25,17 +25,17 @@ dataloaders_conf = {
 model_conf = {
     'device': 'cuda:0',
     'weight': [1, 10],
-    'loss': [('BCE', 0.5), ('Dice', 0.5)],
+    'loss': [('BCE', 0.5), ('Dice_log', 0.5)],
 #     'device': 'cpu',
     'lr': 1e-4,
     'min_lr': 1e-6,
-    'weight_decay': 5e-5,
+    'weight_decay': 1e-4,
     'factor': 0.5,
     'patience': 5,
 }
 
 train_conf = {
-    'num_epochs': 100,
+    'num_epochs': 200,
     'device': 'cuda:0',
 #     'device': 'cpu',
 }
