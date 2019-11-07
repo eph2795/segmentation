@@ -18,9 +18,9 @@ from albumentations import (
 )
 
 
-def soft_aug(original_height=128, original_width=128):
+def soft_aug(original_height=128, original_width=128, k=4):
     aug = Compose([
-        OneOf([RandomSizedCrop(min_max_height=(original_height//4, original_height), 
+        OneOf([RandomSizedCrop(min_max_height=(original_height//k, original_height), 
                                height=original_height, width=original_width, p=0.5),
                PadIfNeeded(min_height=original_height, min_width=original_width, p=0.5)], p=1),    
         VerticalFlip(p=0.5),    
@@ -31,9 +31,9 @@ def soft_aug(original_height=128, original_width=128):
     return aug
 
 
-def medium_aug(original_height=128, original_width=128):
+def medium_aug(original_height=128, original_width=128, k=4):
     aug = Compose([
-        OneOf([RandomSizedCrop(min_max_height=(original_height//4, original_height),
+        OneOf([RandomSizedCrop(min_max_height=(original_height//k, original_height),
                                height=original_height, width=original_width, p=0.5),
                PadIfNeeded(min_height=original_height, min_width=original_width, p=0.5)], p=1),    
         VerticalFlip(p=0.5),    
@@ -49,9 +49,9 @@ def medium_aug(original_height=128, original_width=128):
     return aug
 
 
-def hard_aug(original_height=128, original_width=128): 
+def hard_aug(original_height=128, original_width=128, k=4): 
     aug = Compose([
-        OneOf([RandomSizedCrop(min_max_height=(original_height//4, original_height), 
+        OneOf([RandomSizedCrop(min_max_height=(original_height//k, original_height), 
                                height=original_height, width=original_width, p=0.5),
                PadIfNeeded(min_height=original_height, min_width=original_width, p=0.5)], p=1),    
         VerticalFlip(p=0.5),    

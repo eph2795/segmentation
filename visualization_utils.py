@@ -5,14 +5,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def output_to_binary(prediction, threshold):
+def output_to_binary(prediction, threshold, mode='sample'):
+    if mode == 'sample':
+        axis = 0
+    elif mode == 'batch':
+        axis = 1
+    else:
+        raise ValieError('Wrong mode argument!')
+        
     e = prediction
-    e = e - e.max(axis=0, keepdims=True)
+    e = e - e.max(axis=axis, keepdims=True)
     e = np.exp(e)
-    e = e / np.sum(e, axis=0, keepdims=True)
-    return np.where(e[1] > threshold, 1, 0).astype(np.uint8)
+    e = e / np.sum(e, axis=axis, keepdims=True)
+    
+    if axis == 0:
+        return np.where(e[1] > threshold, 1, 0).astype(np.uint8)
+    elif axis == 1:
+        return np.where(e[:, 1] > threshold, 1, 0).astype(np.uint8)
 
-
+    
 def make_colored_diff(gt, pred, threshold=None, path=None):
     if np.issubdtype(pred.dtype, np.floating):
         pred = output_to_binary(pred, threshold)
@@ -152,8 +163,7 @@ def plot_polar(
 #     fig.text(0.05, 0.5, metric_name.upper(), 
 #              ha='center', va='center', rotation=90, fontsize=40)
 
-    plt.savefig('./article_results/polar_plot_{}_{}_{}.jpg'
-                .format(title, '_'.join(models), '_'.join(metrics_th)))
+    plt.savefig('./article_results/polar_plot_{}.jpg'.format(title))
     plt.show()
     
 

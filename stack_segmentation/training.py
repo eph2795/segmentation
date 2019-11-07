@@ -5,7 +5,7 @@ import numpy as np
 
 import torch
 from torch import nn
-from torch.optim import AdamW
+from torch.optim import SGD, Adam, AdamW, RMSprop
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from .stack import Stack
@@ -32,10 +32,26 @@ def handle_stacks_data(stacks, patches, **kwargs):
     return data_train, data_val, data_test
 
 
-def make_model(device, loss, lr, min_lr, weight_decay, factor, patience, weight=None):
+def make_optimizer(opt_type, parameters, 
+                   lr=1e-3, weight_decay=0, amsgrad=False, nesterov=False, momentum=0.9, centered=False):
+    if opt_type == 'SGD':
+        opt = SGD(parameters, lr=lr, momentum=momentum, weight_decay=weight_decay, nesterov=nesterov)
+    elif opt_type == 'Adam':
+        opt = Adam(parameters, lr=lr, weight_decay=weight_decay, amsgrad=amsgrad)
+    elif opt_type == 'AdamW':
+        opt = AdamW(parameters, lr=lr, weight_decay=weight_decay, amsgrad=amsgrad) 
+    elif opt_type == 'RMSprop':
+        opt = RMSprop(parameters, lr=lr, weight_decay=weight_decay, momentum=momentum, centered=centered)
+    return opt
+
+
+def make_model(device, loss, lr, min_lr, weight_decay, factor, patience,
+               opt_type, momentum, amsgrad, nesterov, centered, weight=None):
     model = UNet(in_channels=1, n_classes=2, padding=True).to(device)
     criterion = make_loss(loss_list=loss, weight=weight, device=device)
-    optimizer = AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    optimizer = make_optimizer(opt_type, model.parameters(), 
+                               lr=lr, weight_decay=weight_decay,
+                               amsgrad=amsgrad, nesterov=nesterov, momentum=momentum, centered=centered)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=factor, patience=patience, verbose=True, min_lr=min_lr)
     return model, criterion, optimizer, scheduler
 
