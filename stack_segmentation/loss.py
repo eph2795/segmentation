@@ -1,38 +1,35 @@
-import torch
-from torch import nn
-import torch.nn.functional as F
+from torch.nn import CrossEntropyLoss
+from torch.nn.modules.loss import _Loss
+
+from pytorch_toolbelt.losses import DiceLoss, FocalLoss, LovaszLoss, WeightedLoss
 
 
-def dice_coef_loss(y_pred, y_true, smooth=1.0):
-    y_pred = y_pred.softmax(dim=1)[:, 1]
-#     y_true = F.one_hot(y_true, num_classes=2).permute(0, 3, 1, 2)
-    intersection = (y_true * y_pred).sum()
-    return 1 - (2. * intersection + smooth) / (y_true.sum() + y_pred.sum() + smooth)
+class JointLoss(_Loss):
+    def __init__(self, *losses):
+        super().__init__()
+        self.losses = losses
+        
+    def forward(self, y_pred, y_gt):
+        return sum(loss(y_pred, y_gt) for loss in self.losses)
 
-def dice_coef_loss_log(y_pred, y_true, smooth=1.0):
-    y_pred = y_pred.softmax(dim=1)[:, 1]
-#     y_true = F.one_hot(y_true, num_classes=2).permute(0, 3, 1, 2)
-    intersection = (y_true * y_pred).sum()
-    return -torch.log((2. * intersection + smooth) / (y_true.sum() + y_pred.sum() + smooth))
-
-
-def make_loss(loss_list, weight, device):
     
-    funcs = []
-    coeffs = []
-    for loss, coeff in loss_list:
-        coeffs.append(coeff)
-        if loss == 'BCE':
-            if weight is not None:
-                weight = torch.FloatTensor(weight).to(device)
-            criterion = nn.CrossEntropyLoss(weight=weight)
-            funcs.append(criterion)
-        elif loss == 'Dice':
-            funcs.append(dice_coef_loss)
-        elif loss == 'Dice_log':
-            funcs.append(dice_coef_loss_log)
-            
-    def loss_func(y_pred, y_true):
-        return sum([coeff * loss(y_pred, y_true) for loss, coeff in zip(funcs, coeffs)])
+def _loss_factory(loss, weight, params):
+    global device
     
-    return loss_func
+    if loss == 'BCE':
+        if 'weight' in params:
+            params['weight'] = torch.FloatTensor(params['weight']).to(device)
+        criterion = CrossEntropyLoss(**params)
+    elif loss == 'Dice':
+        criterion = DiceLoss(**params)
+    elif loss == 'Focal':
+        criterion = FocalLoss(**params)
+    elif loss == 'Lovasz':
+        criterion = LovaszLoss(**params)
+    else:
+        raise ValueError('Wrong loss type!')
+    return WeightedLoss(criterion, weight=weight)
+
+
+def make_joint_loss(loss_config):    
+    return JointLoss(*[_loss_factory(**loss_params) for loss_params in loss_config])

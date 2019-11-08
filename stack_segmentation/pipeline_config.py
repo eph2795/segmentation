@@ -22,10 +22,28 @@ dataloaders_conf = {
     },
 }
 
+loss_config = [
+    {
+        'loss': 'BCE',
+        'weight': 0.5,
+        'params': {
+#             'weight': [1, 10]
+        }
+    }, 
+    {
+        'loss': 'Dice',
+        'weight': 0.5, 
+        'params': {
+            'mode': 'multiclass',
+            'log_loss': True,
+            'from_logits': True,
+            'smooth': 1,
+            'eps': 1e-7}
+    }
+]
+
 model_conf = {
     'device': 'cuda:0',
-    'weight': [1, 10],
-    'loss': [('BCE', 0.5), ('Dice_log', 0.5)],
 #     'device': 'cpu',
     'opt_type': 'AdamW',
     'lr': 1e-4,

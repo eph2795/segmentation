@@ -3,6 +3,22 @@ from itertools import chain
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+
+def make_df(data, model_name):
+    metrics_list = ['accuracy', 'precision', 'recall', 'f1', 'pr_auc', 'iou']
+    data = data['test_metrics']
+    records = []
+    for s, v in data.items():
+        if s in metrics_list:
+            continue
+        stack_name = s.split('/')[-1]
+        record = {k: v[k][-1] for k in metrics_list}
+        record['stack'] = stack_name
+        record['model'] = model_name
+        records.append(record)
+    return pd.DataFrame.from_records(records)
 
 
 def output_to_binary(prediction, threshold, mode='sample'):

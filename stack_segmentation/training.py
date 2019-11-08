@@ -11,7 +11,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from .stack import Stack
 from .unet import UNet
 from .early_stopping import EarlyStopping
-from .loss import make_loss
+from .loss import make_joint_loss
 
 
 def handle_stacks_data(stacks, patches, **kwargs):
@@ -45,10 +45,10 @@ def make_optimizer(opt_type, parameters,
     return opt
 
 
-def make_model(device, loss, lr, min_lr, weight_decay, factor, patience,
+def make_model(device, loss_config, lr, min_lr, weight_decay, factor, patience,
                opt_type, momentum, amsgrad, nesterov, centered, weight=None):
     model = UNet(in_channels=1, n_classes=2, padding=True).to(device)
-    criterion = make_loss(loss_list=loss, weight=weight, device=device)
+    criterion = make_joint_loss(loss_config)
     optimizer = make_optimizer(opt_type, model.parameters(), 
                                lr=lr, weight_decay=weight_decay,
                                amsgrad=amsgrad, nesterov=nesterov, momentum=momentum, centered=centered)
