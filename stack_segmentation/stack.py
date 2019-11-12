@@ -6,12 +6,8 @@ import numpy as np
 import imageio
 from tqdm import tqdm
 
-from catalyst.dl.callbacks import InferCallback    
-
 import torch
 import torchvision.transforms as transforms
-from catalyst.data.augmentor import Augmentor
-from catalyst.dl.utils import UtilsFactory
 
 # TODO: пофиксить ненужную зависимость, тк предсказываю для стека внутри себя
 from .io import collate_fn_basic, make_dataloader
