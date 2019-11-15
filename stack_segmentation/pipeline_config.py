@@ -38,13 +38,20 @@ loss_config = [
             'log_loss': True,
             'from_logits': True,
             'smooth': 1,
-            'eps': 1e-7}
+            'eps': 1e-7
+        }
     }
 ]
 
-model_conf = {
-    'device': 'cuda:0',
-#     'device': 'cpu',
+model_config = {
+#     'source': 'basic',
+    'source': 'qubvel',
+    'model_type': 'Unet',
+    'encoder_name': 'resnet50',
+    'encoder_weights': 'imagenet',
+}
+
+optimizer_config = {
     'opt_type': 'AdamW',
     'lr': 1e-4,
     'weight_decay': 1e-4,
@@ -52,6 +59,9 @@ model_conf = {
     'nesterov': False,
     'momentum': 0.9,
     'centered': False,
+}
+
+scheduler_config = {
     'min_lr': 1e-6,
     'factor': 0.5,
     'patience': 5,

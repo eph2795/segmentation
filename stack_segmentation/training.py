@@ -8,6 +8,8 @@ from torch import nn
 from torch.optim import SGD, Adam, AdamW, RMSprop
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
+import segmentation_models_pytorch as smp
+
 from .stack import Stack
 from .unet import UNet
 from .early_stopping import EarlyStopping
@@ -32,8 +34,18 @@ def handle_stacks_data(stacks, patches, **kwargs):
     return data_train, data_val, data_test
 
 
-def make_optimizer(opt_type, parameters, 
-                   lr=1e-3, weight_decay=0, amsgrad=False, nesterov=False, momentum=0.9, centered=False):
+def make_optimizer(
+        opt_type, 
+        parameters, 
+        lr=1e-3, 
+        weight_decay=0, 
+        amsgrad=False, 
+        nesterov=False, 
+        momentum=0.9, 
+        centered=False,
+        **kwargs
+    ):
+    
     if opt_type == 'SGD':
         opt = SGD(parameters, lr=lr, momentum=momentum, weight_decay=weight_decay, nesterov=nesterov)
     elif opt_type == 'Adam':
@@ -45,14 +57,32 @@ def make_optimizer(opt_type, parameters,
     return opt
 
 
-def make_model(device, loss_config, lr, min_lr, weight_decay, factor, patience,
-               opt_type, momentum, amsgrad, nesterov, centered, weight=None):
-    model = UNet(in_channels=1, n_classes=2, padding=True).to(device)
+
+def make_model(
+        source, 
+        model_type=None, 
+        encoder_name=None, 
+        encoder_weights=None):
+    if source == 'basic':
+        model = UNet(in_channels=1, n_classes=2, padding=True)
+    elif source == 'qubvel':
+        if model_type == 'Unet':
+            model = smp.Unet(encoder_name=encoder_name, encoder_weights=encoder_weights, classes=2, activation=None)
+    else:
+        raise ValueError('Wrong model source!')
+    return model
+    
+    
+def make_optimization_task(
+        device, 
+        model_config,
+        loss_config,
+        optimizer_config,
+        scheduler_config):
+    model = make_model(**model_config).to(device)
     criterion = make_joint_loss(loss_config)
-    optimizer = make_optimizer(opt_type, model.parameters(), 
-                               lr=lr, weight_decay=weight_decay,
-                               amsgrad=amsgrad, nesterov=nesterov, momentum=momentum, centered=centered)
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=factor, patience=patience, verbose=True, min_lr=min_lr)
+    optimizer = make_optimizer(parameters=model.parameters(), **optimizer_config)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', verbose=True, **scheduler_config)
     return model, criterion, optimizer, scheduler
 
 
@@ -75,6 +105,8 @@ def train_loop(
         
     for i in range(num_epochs):
         print('Epoch {}...'.format(i))
+        
+        model.train() 
         losses = []
         for x, y in tqdm(dataloader_train):
             x = torch.from_numpy(x).to(device)
@@ -92,7 +124,8 @@ def train_loop(
         print('Mean train loss: {:.5}'.format(np.mean(losses)))
         
         scheduler.step(np.mean(losses))
-            
+        
+        model.eval()
         losses = []
         for x, y in tqdm(dataloader_val):
             x = torch.from_numpy(x).to(device)
@@ -111,6 +144,7 @@ def train_loop(
             break
     
     model.load_state_dict(torch.load('{}.pt'.format(exp_name)))
+    model.eval()
     metrics_dict = dict()
     for stack_name, dataloader_test in dataloaders_test.items():
         
