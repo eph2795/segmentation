@@ -1,9 +1,8 @@
-
 aug_config = {
     'aug_type': 'medium',
     'original_height': 128,
     'original_width': 128,
-    'k': 2,
+    'k': 4,
 }
 
 dataloaders_conf = {
@@ -46,11 +45,11 @@ loss_config = [
 ]
 
 model_config = {
-#     'source': 'basic',
-    'source': 'qubvel',
-    'model_type': 'Unet',
-    'encoder_name': 'resnet50',
-    'encoder_weights': 'imagenet',
+    'source': 'basic',
+#     'source': 'qubvel',
+#     'model_type': 'Unet',
+#     'encoder_name': 'resnet50',
+#     'encoder_weights': 'imagenet',
 }
 
 optimizer_config = {
@@ -71,6 +70,6 @@ scheduler_config = {
 
 train_conf = {
     'num_epochs': 200,
-    'device': 'cuda:0',
+    'device': 'cuda:1',
 #     'device': 'cpu',
 }

@@ -67,3 +67,16 @@ def hard_aug(original_height=128, original_width=128, k=4):
         RandomBrightnessContrast(p=0.8),    
         RandomGamma(p=0.8)])
     return aug
+
+
+def make_aug(aug_type, original_height, original_width, k):
+    if aug_type is None:
+        return
+    elif aug_type == 'soft':
+        return soft_aug(original_height=128, original_width=128, k=k)
+    elif aug_type == 'medium':
+        return medium_aug(original_height=128, original_width=128, k=k)
+    elif aug_type == 'hard':
+        return hard_aug(original_height=128, original_width=128, k=k)
+    else:
+        raise ValueError('Wrong augmentation type!')

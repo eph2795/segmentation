@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader
 
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 
+from .aug_pipelines import make_aug
+
 
 class TomoDataset:
     
@@ -19,7 +21,8 @@ class TomoDataset:
     
     def __getitem__(self, idx):
         samples = self.samples[idx]
-        image, mask = samples['features'], samples['targets']
+        image = np.squeeze(samples['features'])[:, :, np.newaxis]
+        mask = np.squeeze(samples['targets'])
         
         if self.augmentation_fn is not None:
             augmented = augmentation_pipeline(image=image, mask=mask)
@@ -51,15 +54,9 @@ def collate_fn_basic(samples, augmentation_pipeline):
     image_samples, gt_samples = [], []
     
     for sample in samples:
-#         image = np.squeeze(sample['features'])
-        image = sample['features']
-        mask = np.squeeze(sample['targets'])      
-#         if augmentation_pipeline is not None:
-#             augmented = augmentation_pipeline(image=image, mask=mask)
-#             image = augmented['image']
-#             mask = augmented['mask']
-#         image = image_process_basic(image)
-#         mask = mask_process_basic(mask)
+        image, mask = sample['features'], sample['targets']
+#         image = sample['features']
+#         mask = np.squeeze(sample['targets'])      
         image_samples.append(image[np.newaxis].transpose(0, 3, 1, 2))
         gt_samples.append(mask[np.newaxis, :, :])
     
@@ -72,11 +69,15 @@ def make_dataloader(
         samples, 
         collate_fn, 
         model_config,
-        augmentation_pipeline=None, 
+        aug_config=None, 
         batch_size=32, 
         shuffle=True, 
         num_workers=8
     ):
+    if aug_config is not None:
+        augmentation_pipeline = make_aug(**aug_config)
+    else:
+        augmentation_pipeline = None
     
     if model_config['source'] == 'basic':
         preprocessing_image_fn = image_process_basic

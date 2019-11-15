@@ -113,12 +113,13 @@ class Stack:
             patches.append(patch)
         return patches
     
-    def apply(self, model, patch_sizes, bs=1, num_workers=16, device='cpu', threshold=0.5):
+    def apply(self, model, model_config, patch_sizes, bs=1, num_workers=16, device='cpu', threshold=0.5):
         data = self.slice_up(patch_sizes=patch_sizes)
         
         dataloader = make_dataloader(samples=data, 
                                      collate_fn=collate_fn_basic,
-                                     augmentation_pipeline=None,
+                                     model_config=model_config,
+                                     aug_config=None,
                                      batch_size=1,
                                      shuffle=False,
                                      num_workers=num_workers)
