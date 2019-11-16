@@ -25,7 +25,7 @@ class TomoDataset:
         mask = np.squeeze(samples['targets'])
         
         if self.augmentation_fn is not None:
-            augmented = augmentation_pipeline(image=image, mask=mask)
+            augmented = self.augmentation_fn(image=image, mask=mask)
             image = augmented['image']
             mask = augmented['mask']
         if self.preprocessing_image_fn is not None:
@@ -54,9 +54,7 @@ def collate_fn_basic(samples, augmentation_pipeline):
     image_samples, gt_samples = [], []
     
     for sample in samples:
-        image, mask = sample['features'], sample['targets']
-#         image = sample['features']
-#         mask = np.squeeze(sample['targets'])      
+        image, mask = sample['features'], sample['targets']   
         image_samples.append(image[np.newaxis].transpose(0, 3, 1, 2))
         gt_samples.append(mask[np.newaxis, :, :])
     

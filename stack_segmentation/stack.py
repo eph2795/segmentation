@@ -162,12 +162,12 @@ class Stack:
                                 self.features[:, :, i].astype(np.uint8))
             if targets:
                 imageio.imwrite(os.path.join(targets_path, 'targets{:04}.bmp'.format(i)), 
-                                self.preds[:, :, i].astype(np.uint8))
+                                self.targets[:, :, i].astype(np.uint8))
             if preds:
                 pred = self.preds[:, :, i]
                 if np.issubdtype(pred.dtype, np.floating):
                     pred = (pred > threshold)
-                pred = np.where(pred, 255, 0).astype(np.uint8)
+                pred = np.where(pred, 0, 255).astype(np.uint8)
                 imageio.imwrite(os.path.join(preds_path, 'preds{:04}.bmp'.format(i)), 
                                 pred)
 #     def measure(self, metric, threshold=None):

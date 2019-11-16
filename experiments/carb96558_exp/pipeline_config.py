@@ -70,6 +70,6 @@ scheduler_config = {
 
 train_conf = {
     'num_epochs': 200,
-    'device': 'cuda:1',
+    'device': 'cuda:0',
 #     'device': 'cpu',
 }
