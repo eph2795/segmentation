@@ -80,7 +80,7 @@ def make_optimization_task(
         optimizer_config,
         scheduler_config):
     model = make_model(**model_config).to(device)
-    criterion = make_joint_loss(loss_config)
+    criterion = make_joint_loss(loss_config, device)
     optimizer = make_optimizer(parameters=model.parameters(), **optimizer_config)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', verbose=True, **scheduler_config)
     return model, criterion, optimizer, scheduler
@@ -97,11 +97,12 @@ def train_loop(
         metrics,
         device, 
         num_epochs,
-        exp_name):
+        exp_name,
+        es_patience=15):
     
     train_losses = []
     val_losses = []
-    es = EarlyStopping(patience=10, verbose=False, delta=1e-5, checkpoint_path='{}.pt'.format(exp_name))
+    es = EarlyStopping(patience=es_patience, verbose=False, delta=1e-5, checkpoint_path='{}.pt'.format(exp_name))
         
     for i in range(num_epochs):
         print('Epoch {}...'.format(i))

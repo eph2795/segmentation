@@ -1,32 +1,59 @@
-from .aug_pipelines import medium_aug
 
+aug_config = {
+    'aug_type': 'soft',
+    'original_height': 128,
+    'original_width': 128,
+    'k': 1,
+}
 
 dataloaders_conf = {
     'train': {
         'batch_size': 32,
         'num_workers': 8,
         'shuffle': True,
-        'augmentation_pipeline': medium_aug(original_height=128, original_width=128),
     },
    'val': {
         'batch_size': 32,
         'num_workers': 8,
         'shuffle': False,
-        'augmentation_pipeline': None,
     },
     'test': {
         'batch_size': 32,
         'num_workers': 8,
         'shuffle': True,
-        'augmentation_pipeline': None,
     },
 }
 
-model_conf = {
-    'device': 'cuda:0',
-    'weight': [1, 10],
-    'loss': [('BCE', 0.5), ('Dice_log', 0.5)],
-#     'device': 'cpu',
+loss_config = [
+    {
+        'loss': 'BCE',
+        'weight': 0.5,
+        'params': {
+#             'weight': [1, 10]
+        }
+    }, 
+    {
+        'loss': 'Dice',
+        'weight': 0.5, 
+        'params': {
+            'mode': 'multiclass',
+            'log_loss': True,
+            'from_logits': True,
+            'smooth': 1,
+            'eps': 1e-7
+        }
+    }
+]
+
+model_config = {
+    'source': 'basic',
+#     'source': 'qubvel',
+#     'model_type': 'Unet',
+#     'encoder_name': 'resnet50',
+#     'encoder_weights': 'imagenet',
+}
+
+optimizer_config = {
     'opt_type': 'AdamW',
     'lr': 1e-4,
     'weight_decay': 1e-4,
@@ -34,13 +61,16 @@ model_conf = {
     'nesterov': False,
     'momentum': 0.9,
     'centered': False,
+}
+
+scheduler_config = {
     'min_lr': 1e-6,
     'factor': 0.5,
     'patience': 5,
 }
 
 train_conf = {
-    'num_epochs': 200,
+    'num_epochs': 300,
     'device': 'cuda:0',
 #     'device': 'cpu',
 }
