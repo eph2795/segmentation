@@ -9,17 +9,17 @@ aug_config = {
 dataloaders_conf = {
     'train': {
         'batch_size': 32,
-        'num_workers': 8,
+        'num_workers': 16,
         'shuffle': True,
     },
    'val': {
         'batch_size': 32,
-        'num_workers': 8,
+        'num_workers': 16,
         'shuffle': False,
     },
     'test': {
         'batch_size': 32,
-        'num_workers': 8,
+        'num_workers': 16,
         'shuffle': True,
     },
 }

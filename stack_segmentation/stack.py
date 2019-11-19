@@ -120,21 +120,25 @@ class Stack:
                                      collate_fn=collate_fn_basic,
                                      model_config=model_config,
                                      aug_config=None,
-                                     batch_size=1,
+                                     batch_size=bs,
                                      shuffle=False,
                                      num_workers=num_workers)
         
         
 
-        for i, (x, _) in tqdm(enumerate(dataloader)):
+        offset = 0
+        for (x, _) in tqdm(dataloader):
             logit = model(torch.from_numpy(x).to(device)).cpu().data.numpy()
             probs = softmax(logit)
             if threshold is None:
-                pred = probs[:, 1]
+                preds = probs[:, 1]
             else:
-                pred = (probs[:, 1] > threshold).astype(np.uint8)
-            data[i]['preds'] = pred.reshape(patch_sizes)
-
+                preds = (probs[:, 1] > threshold).astype(np.uint8)
+            
+            for i, pred in enumerate(preds):
+                data[i + offset]['preds'] = pred.reshape(patch_sizes)
+            offset += preds.shape[0]
+            
         return self.assembly(self.H, self.W, self.D, data)
     
     def dump(self, dump_directory, features=False, targets=False, preds=True, threshold=0.5):

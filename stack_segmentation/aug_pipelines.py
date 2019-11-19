@@ -73,10 +73,10 @@ def make_aug(aug_type, original_height, original_width, k):
     if aug_type is None:
         return
     elif aug_type == 'soft':
-        return soft_aug(original_height=128, original_width=128, k=k)
+        return soft_aug(original_height=original_height, original_width=original_width, k=k)
     elif aug_type == 'medium':
-        return medium_aug(original_height=128, original_width=128, k=k)
+        return medium_aug(original_height=original_height, original_width=original_width, k=k)
     elif aug_type == 'hard':
-        return hard_aug(original_height=128, original_width=128, k=k)
+        return hard_aug(original_height=original_height, original_width=original_width, k=k)
     else:
         raise ValueError('Wrong augmentation type!')
