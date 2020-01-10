@@ -102,7 +102,7 @@ def train_loop(
     
     train_losses = []
     val_losses = []
-    es = EarlyStopping(patience=es_patience, verbose=False, delta=1e-5, checkpoint_path='{}.pt'.format(exp_name))
+    es = EarlyStopping(patience=es_patience, verbose=False, delta=1e-6, checkpoint_path='{}.pt'.format(exp_name))
         
     for i in range(num_epochs):
         print('Epoch {}...'.format(i))
