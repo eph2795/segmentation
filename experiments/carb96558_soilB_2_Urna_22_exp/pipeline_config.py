@@ -1,9 +1,8 @@
-
 aug_config = {
     'aug_type': 'medium',
     'original_height': 128,
     'original_width': 128,
-    'k': 2,
+    'k': 4,
 }
 
 dataloaders_conf = {
